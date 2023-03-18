@@ -1,5 +1,5 @@
 import openpyxl
-
+import os
 
 # creates excel worksheet
 wb = openpyxl.Workbook()
@@ -20,56 +20,51 @@ total_amount = 0
 
 # ask user to enter invoice data
 while True:
-   # get inputs from the user
-   dates = input("Enter date (e.g. 01/01/2001): ")
-   ticket_numbers = input("Enter ticket numbers (separated by commas): ")
-   truck_number = input("Enter truck number: ")
-   customer_job = input("Enter customer/job name: ")
+    # get inputs from the user
+    dates = input("Enter date (e.g. 01/01/2001): ")
+    ticket_numbers = input("Enter ticket numbers (separated by commas): ")
+    truck_number = input("Enter truck number: ")
+    customer_job = input("Enter customer/job name: ")
 
+    # validators for
+    while True:
+        try:
+            loads = int(input("Enter loads/hours: "))
+            break
+        except ValueError:
+            print("Please enter a valid number for loads/hours.")
 
-   # validators for 
-   while True:
-       try:
-           loads = int(input("Enter loads/hours: "))
-           break
-       except ValueError:
-           print("Please enter a valid number for loads/hours.")
+    while True:
+        try:
+            rate_per_load = float(input("Enter rate per load/hour: "))
+            break
+        except ValueError:
+            print("Please enter a valid number for rate per load/hour.")
 
+    # calculate the total amount owed for this row
+    row_total = loads * rate_per_load
 
-   while True:
-       try:
-           rate_per_load = float(input("Enter rate per load/hour: "))
-           break
-       except ValueError:
-           print("Please enter a valid number for rate per load/hour.")
+    # add invoice data
+    try:
+        ws.append([dates, ticket_numbers, truck_number,
+                  customer_job, loads, rate_per_load, row_total])
+    except:
+        print("Invalid data entered. Please try again.")
 
+    # add this row's total to the grand total
+    total_amount += row_total
 
-   # calculate the total amount owed for this row
-   row_total = loads * rate_per_load
+    # ask user if they want to add another row
+    choice = input(
+        "Do you want to add another row? (ENTER y for yes, n for no) ").lower()
 
+    # validates entry
+    while choice != 'y' and choice != 'n':
+        choice = input(
+            "Invalid output. Do you want to add another row? (PLEASE ENTER y for yes, n for no)")
 
-   # add invoice data
-   try:
-       ws.append([dates, ticket_numbers, truck_number, customer_job, loads, rate_per_load, row_total])
-   except:
-       print("Invalid data entered. Please try again.")
-
-
-   # add this row's total to the grand total
-   total_amount += row_total
-
-
-   # ask user if they want to add another row
-   choice = input("Do you want to add another row? (ENTER y for yes, n for no) ").lower()
-
-
-   # validates entry
-   while choice != 'y' and choice != 'n':
-       choice= input("Invalid output. Do you want to add another row? (PLEASE ENTER y for yes, n for no)")
-
-
-   if choice != 'y':
-       break
+    if choice != 'y':
+        break
 
 
 # grand total row gets added after all rows added
@@ -78,20 +73,23 @@ ws.append(['Grand Total: ', '', '', '', '', '', total_amount])
 
 # data formatting, font, width
 for row in ws.iter_rows(min_row=1, max_row=1):
-   for cell in row:
-       cell.font = openpyxl.styles.Font(bold=True)
+    for cell in row:
+        cell.font = openpyxl.styles.Font(bold=True)
 for col in ['A', 'B', 'C', 'D']:
-   ws.column_dimensions[col].width = 20
+    ws.column_dimensions[col].width = 20
 ws.column_dimensions['E'].width = 10
 ws.column_dimensions['F'].width = 15
 ws.column_dimensions['G'].width = 20
 
 
-# ask for file name then saves
-invoice_name= input('What would you like to name the file?: ')
+# ask for file name and directory then saves
+invoice_name = input('What would you like to name the file?: ')
+directory_name = input('What directory should the file be saved in?: ')
+directory = os.path.abspath(directory_name)
+
 # saves, gives error message if some error happens
 try:
-   wb.save(f'{invoice_name}.xlsx')
-   print("File saved successfully!")
+    wb.save(os.path.join(directory, f'{invoice_name}.xlsx'))
+    print("File saved successfully!")
 except Exception as e:
-   print(f'Error occurred: {e}')
+    print(f'Error occurred: {e}')
