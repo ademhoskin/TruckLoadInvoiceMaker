@@ -1,5 +1,6 @@
 # Truck Load Invoice Excel Worksheet
-
+## About
+I made this script to help simplfy entering truck load ticket data for invoices while working at Adem Inc. (my uncle's trucking company) in 2019.
 This Python script creates an Excel worksheet to keep track of truck load invoices. 
 The user is prompted to input data for each invoice, including dates, ticket numbers, truck numbers, customer or job names, loads or hours, and rate per load or hour. 
 The script calculates the total amount owed for each row and the grand total for all the invoices.
